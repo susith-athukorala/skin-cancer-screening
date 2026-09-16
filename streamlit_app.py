@@ -20,8 +20,11 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 # 1. Weights Mount / Auto-Download
 # -------------------------------------------------------------
 os.makedirs("models", exist_ok=True)
-GK_URL = "https://github.com/susith-athukorala/skin-cancer-screening/releases/download/v1.0/tier1_gatekeeper_v2.pth"
-MODEL_URL = "https://github.com/susith-athukorala/skin-cancer-screening/releases/download/v1.0/skin_cancer_hierarchical_model.pth"
+
+# NOTE: Adjust the repo name below if your repo is named 'skin-cancer-screening-pipeline'
+REPO_NAME = "skin-cancer-screening"
+GK_URL = f"https://github.com/susith-athukorala/skin-cancer-screening/releases/download/v1.0/tier1_gatekeeper_v2.pth"
+MODEL_URL = f"https://github.com/susith-athukorala/skin-cancer-screening/releases/download/v1.0/skin_cancer_hierarchical_model.pth"
 
 gk_path = os.path.join("models", "tier1_gatekeeper_v2.pth")
 model_path = os.path.join("models", "skin_cancer_hierarchical_model.pth")
@@ -182,7 +185,6 @@ def verify_specimen_salience(pil_img):
 
     return True, delta_lum, local_contrast, anisotropy_ratio
 
-# Helper for rendering horizontal Gradio-style probability bars
 def render_prob_bar(label, prob):
     pct = prob * 100
     st.markdown(
@@ -201,7 +203,7 @@ def render_prob_bar(label, prob):
     )
 
 # -------------------------------------------------------------
-# 4. Streamlit Layout (Replicating Gradio Interface Exactly)
+# 4. Streamlit Layout
 # -------------------------------------------------------------
 st.title("3-Tier Hierarchical Skin Cancer Screening Model (v2) by Susith")
 st.caption("Dual Tier 1 specimen validation filter + histogenetic lineage decoupling + asymmetric clinical diagnostic matrix.")
@@ -210,7 +212,7 @@ left_col, right_col = st.columns([1, 1], gap="large")
 
 with left_col:
     st.subheader("Upload Lesion (Centered Close-Up)")
-    uploaded_file = st.file_uploader("", type=["jpg", "jpeg", "png", "webp"], label_visibility="collapsed")
+    uploaded_file = st.file_uploader("Upload", type=["jpg", "jpeg", "png", "webp"], label_visibility="collapsed")
     if uploaded_file is not None:
         pil_raw = Image.open(uploaded_file).convert('RGB')
         st.image(pil_raw, use_container_width=True)
