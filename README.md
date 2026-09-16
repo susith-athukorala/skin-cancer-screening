@@ -22,44 +22,6 @@ To solve these challenges, this system implements a **3-Tier Cascaded Screening 
 
 ## 🏗️ System Architecture
 
-[ Input Dermoscopic Specimen ]
-               │
-               ▼
-┌─────────────────────────────────────────────────────────────┐
-│ TIER 1: Adaptive Saliency & Specimen Gatekeeper             │
-│ • Local Contrast Gradient (Center vs. Immediate Ring)       │
-│ • Directional Anisotropy (Sobel Gradient Axis Ratio)        │
-│ • MobileNetV3-Small Lesion vs. OOD Binary Classifier        │
-└──────────────────────────────┬──────────────────────────────┘
-                               │
-            ┌──────────────────┴──────────────────┐
-            ▼                                     ▼
-   [ Saliency/OOD Failed ]               [ Specimen Validated ]
-   ⚠️ HALT & REJECT                       │
-   (Prevents cutis/desk hallucination)    ▼
-┌─────────────────────────────────────────────────────────────┐
-│ TIER 2: Dual-Head Hierarchical Screener (EfficientNet-B0)   │
-│ • Substrate Cleanup: DullRazor Black-Hat Inpainting         │
-│ • Color Normalization: Shades of Gray Constancy (p=6)       │
-│ • Head 1: Histogenetic Lineage Decoupling (3 Classes)       │
-│ • Head 2: Terminal Pathology Classification (6 Classes)     │
-│ • Visual Attribution: Backpropagated Grad-CAM Engine        │
-└──────────────────────────────┬──────────────────────────────┘
-                               │
-                               ▼
-┌─────────────────────────────────────────────────────────────┐
-│ TIER 3: Asymmetric Decision Matrix & Ambiguity Engine       │
-│ • Normalized Shannon Entropy Ambiguity Scoring              │
-│ • Asymmetric Malignancy Escalation (Melanoma & BCC)        │
-│ • Keratotic Tail Logit Override (Bowen's / AKIEC Catch)     │
-└──────────────────────────────┬──────────────────────────────┘
-                               │
-                               ▼
-            [ Actionable Clinical Triage Output ]
-    🔴 HIGH RISK │ 🟡 PRE-MALIGNANT │ 🟢 BENIGN │ ⚠️ UNCERTAIN
-
-
-
 ```mermaid
 flowchart TD
     A["📸 Input Dermoscopic Specimen"] --> B{"TIER 1: Intake Saliency Gate<br/>• Local Contrast Gradient (Center vs Ring)<br/>• Directional Anisotropy (Sobel Axis Ratio)<br/>• MobileNetV3-Small Lesion vs OOD"}
@@ -79,8 +41,6 @@ flowchart TD
     style E fill:#fffbeb,stroke:#f59e0b,stroke-width:2px,color:#78350f
     style F fill:#ffffff,stroke:#0f172a,stroke-width:2px,color:#0f172a
 ```
-
-
 
 ## ⚙️ Detailed Pipeline Mechanics
 
