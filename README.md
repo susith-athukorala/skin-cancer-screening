@@ -91,25 +91,38 @@ Stress-tested against a diverse 17-specimen challenge battery comprising non-les
 
 ### Setup Instructions
 
-# 1. Clone the repository
-git clone https://github.com/susith-athukorala/skin-cancer-screening-pipeline.git
-cd skin-cancer-screening-pipeline
+## 🚀 Setup Instructions
 
-# 2. Create and activate a virtual environment
-# On macOS / Linux:
+### 1. Clone the repository
+```bash
+git clone [https://github.com/susith-athukorala/skin-cancer-screening-pipeline.git](https://github.com/susith-athukorala/skin-cancer-screening-pipeline.git)
+cd skin-cancer-screening-pipeline
+```
+
+### 2. Create and activate a virtual environment
+
+**macOS / Linux:**
+```bash
 python3 -m venv venv
 source venv/bin/activate
+```
 
-# On Windows (Command Prompt / PowerShell):
-# python -m venv venv
-# venv\Scripts\activate
+**Windows (Command Prompt / PowerShell):**
+```cmd
+python -m venv venv
+venv\Scripts\activate
+```
 
-# 3. Upgrade pip and install dependencies
+### 3. Upgrade pip and install dependencies
+```bash
 pip install --upgrade pip
 pip install -r requirements.txt
+```
 
-# 4. Launch the application locally
+### 4. Launch the application locally
+```bash
 streamlit run streamlit_app.py
+```
 
 ### ⚖️ Clinical & Regulatory Disclaimer
 
