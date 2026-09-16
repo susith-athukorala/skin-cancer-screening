@@ -59,6 +59,29 @@ To solve these challenges, this system implements a **3-Tier Cascaded Screening 
     🔴 HIGH RISK │ 🟡 PRE-MALIGNANT │ 🟢 BENIGN │ ⚠️ UNCERTAIN
 
 
+
+```mermaid
+flowchart TD
+    A["📸 Input Dermoscopic Specimen"] --> B{"TIER 1: Intake Saliency Gate<br/>• Local Contrast Gradient (Center vs Ring)<br/>• Directional Anisotropy (Sobel Axis Ratio)<br/>• MobileNetV3-Small Lesion vs OOD"}
+
+    B -- Saliency / OOD Failed --> C["⚠️ HALT & REJECT<br/>Prevents cutis / flat surface hallucination"]
+    
+    B -- Specimen Validated --> D["TIER 2: Dual-Head Screener (EfficientNet-B0)<br/>• DullRazor Inpainting & Shades-of-Gray Constancy<br/>• Head 1: Histogenetic Lineage Decoupling (3 Classes)<br/>• Head 2: Terminal Histology Classification (6 Classes)<br/>• Grad-CAM Visual Heatmap Localization"]
+    
+    D --> E["TIER 3: Asymmetric Decision Matrix<br/>• Shannon Entropy Ambiguity Scoring<br/>• Asymmetric Malignancy Escalation (Melanoma & BCC)<br/>• Keratotic Tail Logit Override (Bowen's / AKIEC Catch)"]
+    
+    E --> F["📋 Actionable Clinical Triage<br/>🔴 HIGH RISK | 🟡 PRE-MALIGNANT | 🟢 BENIGN | ⚠️ UNCERTAIN"]
+
+    style A fill:#f8fafc,stroke:#64748b,stroke-width:2px,color:#0f172a
+    style B fill:#eff6ff,stroke:#3b82f6,stroke-width:2px,color:#1e3a8a
+    style C fill:#fef2f2,stroke:#ef4444,stroke-width:2px,color:#991b1b
+    style D fill:#f0fdf4,stroke:#22c55e,stroke-width:2px,color:#14532d
+    style E fill:#fffbeb,stroke:#f59e0b,stroke-width:2px,color:#78350f
+    style F fill:#ffffff,stroke:#0f172a,stroke-width:2px,color:#0f172a
+```
+
+
+
 ## ⚙️ Detailed Pipeline Mechanics
 
 ### Tier 1: Intake Saliency Gate & Artifact Halting
