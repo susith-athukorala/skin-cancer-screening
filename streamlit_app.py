@@ -10,7 +10,7 @@ from PIL import Image
 from torchvision import transforms, models
 
 st.set_page_config(
-    page_title="3-Tier Hierarchical Skin Cancer Screening Model by Susith",
+    page_title="3-Tier Hierarchical Skin Cancer Screening Model (v2) by Susith",
     layout="wide"
 )
 
@@ -20,9 +20,7 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 # 1. Weights Mount / Auto-Download
 # -------------------------------------------------------------
 os.makedirs("models", exist_ok=True)
-
-# NOTE: Adjust the repo name below if your repo is named 'skin-cancer-screening-pipeline'
-REPO_NAME = "skin-cancer-screening"
+REPO_NAME = "skin-cancer-screening"  # Change to your exact repo name if needed
 GK_URL = f"https://github.com/susith-athukorala/skin-cancer-screening/releases/download/v1.0/tier1_gatekeeper_v2.pth"
 MODEL_URL = f"https://github.com/susith-athukorala/skin-cancer-screening/releases/download/v1.0/skin_cancer_hierarchical_model.pth"
 
@@ -203,23 +201,69 @@ def render_prob_bar(label, prob):
     )
 
 # -------------------------------------------------------------
-# 4. Streamlit Layout
+# 4. Streamlit Layout with Submit & Clear Controls
 # -------------------------------------------------------------
-st.title("3-Tier Hierarchical Skin Cancer Screening Model (v2) by Susith")
+st.title("3-Tier Hierarchical Skin Cancer Screening Model by Susith")
 st.caption("Dual Tier 1 specimen validation filter + histogenetic lineage decoupling + asymmetric clinical diagnostic matrix.")
+
+# Initialize session state for analysis and reset counter
+if "run_analysis" not in st.session_state:
+    st.session_state.run_analysis = False
+if "reset_key" not in st.session_state:
+    st.session_state.reset_key = 0
 
 left_col, right_col = st.columns([1, 1], gap="large")
 
 with left_col:
     st.subheader("Upload Lesion (Centered Close-Up)")
-    uploaded_file = st.file_uploader("Upload", type=["jpg", "jpeg", "png", "webp"], label_visibility="collapsed")
-    if uploaded_file is not None:
-        pil_raw = Image.open(uploaded_file).convert('RGB')
-        st.image(pil_raw, use_container_width=True)
+    
+    # Mode selector: File or Camera
+    input_mode = st.radio(
+        "Acquisition Mode:", 
+        ["Upload File", "Live Camera Capture"], 
+        horizontal=True, 
+        key=f"mode_{st.session_state.reset_key}"
+    )
+
+    pil_raw = None
+    if input_mode == "Upload File":
+        uploaded_file = st.file_uploader(
+            "Select Image", 
+            type=["jpg", "jpeg", "png", "webp"], 
+            label_visibility="collapsed",
+            key=f"upload_{st.session_state.reset_key}"
+        )
+        if uploaded_file is not None:
+            pil_raw = Image.open(uploaded_file).convert('RGB')
+    else:
+        camera_file = st.camera_input(
+            "Take photo", 
+            label_visibility="collapsed",
+            key=f"cam_{st.session_state.reset_key}"
+        )
+        if camera_file is not None:
+            pil_raw = Image.open(camera_file).convert('RGB')
+
+    if pil_raw is not None:
+        st.image(pil_raw, caption="Acquired Specimen", use_container_width=True)
+
+    # Action buttons mimicking Gradio's layout
+    btn_col1, btn_col2 = st.columns(2)
+    with btn_col1:
+        if st.button("Submit", type="primary", use_container_width=True):
+            if pil_raw is not None:
+                st.session_state.run_analysis = True
+            else:
+                st.warning("Please upload or capture an image first.")
+    with btn_col2:
+        if st.button("Clear", use_container_width=True):
+            st.session_state.run_analysis = False
+            st.session_state.reset_key += 1
+            st.rerun()
 
 with right_col:
-    if uploaded_file is None:
-        st.info("Upload a lesion image on the left to start screening.")
+    if not st.session_state.run_analysis or pil_raw is None:
+        st.info("Select or capture an image on the left, then click **Submit** to run diagnostic triage.")
     else:
         # Tier 1 Saliency Gate
         is_salient, d_lum, l_contrast, aniso = verify_specimen_salience(pil_raw)
